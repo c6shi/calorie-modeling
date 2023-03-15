@@ -1,0 +1,28 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+div.shell {
+	width: 90%;
+}
+
+header {
+	max-width: 90%;
+}
+
+section#downloads {
+	width: 90%;
+}
+
+span.banner-fix{
+	width: 90%;
+}
+
+footer {
+	max-width: 90%;
+}
+
+.table-wrapper {
+  overflow-x: scroll;
+}
