@@ -71,8 +71,11 @@ We used GridSearchCV to test different max depth values from 1 to 9 and got the 
 #### Models:
 
 We tested four models and tested three combinations of column transformations:
-1) number of years posted, binned number of ingredients, standardized calories 
+
+1) number of years posted, binned number of ingredients, standardized calories
+
 2) number of years posted, binarized number of steps (>9), binned number of ingredients, standardized calories
+
 3) number of years posted, binarized number of steps (>9), standardized calories
 
 |model                                                                                                       | max RMSE of combination 1| max RMSE of combination 2| max RMSE of combination 3|
@@ -96,8 +99,7 @@ We conducted a permutation test to assess the fairness of our model, we chose to
 - test statistic: difference in root mean squared error (specifically, high calorie RMSE - low calorie RMSE)
 - significance level: \\(\alpha = 0.05\\)
 - p-value = \\(0.0\\)
-
-Since our p-value \\(\leq \alpha = 0.05\\), we reject the null hypothesis, \\(H_0\\), in favor of the alternative hypothesis, \\(H_1\\), so our data suggests that it appears that high calorie recipes have a lower precision than low calorie recipes.
+- conclusion: since our p-value \\(\leq \alpha = 0.05\\), we reject the null hypothesis, \\(H_0\\), in favor of the alternative hypothesis, \\(H_1\\), so our data suggests that it appears that high calorie recipes have a lower precision than low calorie recipes.
 
 <iframe src='assets/rmseperm.html' width=1000 height=600 frameBorder=0></iframe>
 
