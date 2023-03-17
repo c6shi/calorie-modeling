@@ -56,18 +56,24 @@ Features:
 Feature Engineering:
 - `calories`: standardized scaling
 - `n_steps`: binarized with threshold > 9
-- `n_ingredients`: binned
+- `n_ingredients`: binned (see graph below)
 - `submitted`: the number of years a recipe has been posted since March 13, 2023 (a positive rational number)
 
+<iframe src='assets/ingbin.html' width=1000 height=600 frameBorder=0></iframe>
+
+Looking at the distribution of number of ingredients, we chose four bins that roughly separate the data into equal area, except for the last bin which groups most of the data in the right tail that is far from the center of the distribution.
+
 Hyperparameter Selection:
+
 One of the main hyperparameters of the decision tree regression model is the max depth, which sets how many levels of the tree the model can have when splitting up the data into its leaf nodes. The regressor model additionally takes the mean of the response variable among each leaf node. 
 We used GridSearchCV to test different max depth values from 1 to 9 and got the best max depth parameter value of 3. 
 
 Models:
+
 We tested four models and tested three combinations of column transformations:
-1) years_posted, number of ingredients binned, calories standardized
-2) years_posted, number of steps binarized (>9), number of ingredients binned, calories standardized
-3) years_posted, number of steps binarized (>9), calories standardized
+1) number of years posted, binned number of ingredients, standardized calories 
+2) number of years posted, binarized number of steps (>9), binned number of ingredients, standardized calories
+3) number of years posted, binarized number of steps (>9), standardized calories
 
 |model                                                                                                       | max RMSE of combination 1| max RMSE of combination 2| max RMSE of combination 3|
 |:-----------------------------------------------------------------------------------------------------------|-------------------------:|-------------------------:|-------------------------:|
@@ -81,13 +87,14 @@ As shown by the table above, the decision tree regressor had the lowest max RMSE
 (explain greater than 5)
 
 # Fairness Analysis
-To test the fairness of our model, we chose to group our data by whether a recipe had low or high calories. This was created with a binarizer with threshold 500 calories to roughly split our data in half.
+We conducted a permutation test to assess the fairness of our model, we chose to group our data by whether a recipe had low or high calories. This was created with a binarizer with threshold 500 calories to roughly split our data in half.
 
-- $H_0$: Our model is fair. Its precision for low calorie recipes and high calorie recipes are roughly the same. Any differences are due to random chance.
-- $H_1$: Our model is unfair. Its precision for low calorie recipes is lower than the precision for high calorie recipes.
-- test statistic: difference in mean squared error (specifically, high calorie MSE $-$ low calorie MSE)
-- significance level: $\alpha = 0.05$
-- p-value = $0.0$
+- \\(H_0\\): Our model is fair. Its RMSE for low calorie recipes and high calorie recipes are roughly the same. Any differences are due to random chance.
+- \\(H_1\\): Our model is unfair. Its RMSE for low calorie recipes is lower than the RMSE for high calorie recipes.
+- test statistic: difference in root mean squared error (specifically, high calorie RMSE - low calorie RMSE)
+- significance level: \\(\alpha = 0.05\\)
+- p-value = \\(0.0\\)
 
-Since our p-value $\leq \alpha = 0.05$, we reject the null hypothesis, $H_0$, in favor of the alternative hypothesis, $H_1$, so our data suggests that it appears that high calorie recipes have a lower precision than low calorie recipes.
+Since our p-value \\(\leq \alpha = 0.05\\), we reject the null hypothesis, \\(H_0\\), in favor of the alternative hypothesis, $H_1$, so our data suggests that it appears that high calorie recipes have a lower precision than low calorie recipes.
 
+<iframe src='assets/rmseperm.html' width=1000 height=600 frameBorder=0></iframe>
