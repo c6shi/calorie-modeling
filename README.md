@@ -67,17 +67,27 @@ Models:
 We tested four models and tested three combinations of column transformations:
 1) years_posted, number of ingredients binned, calories standardized
 2) years_posted, number of steps binarized (>9), number of ingredients binned, calories standardized
-3) polynomial transformations with degree 2 (also determined by GridSearchCV) -> linear regression
-4) decision tree regression
-5) k-neighbors regression
+3) years_posted, number of steps binarized (>9), calories standardized
 
 |model                                                                                                       | max RMSE of combination 1| max RMSE of combination 2| max RMSE of combination 3|
 |:-----------------------------------------------------------------------------------------------------------|-------------------------:|-------------------------:|-------------------------:|
 |linear regression                                                                                           |1.1066225873529487        |1.1068480647496861        |1.1068499899429582        |
 |polynomial transformations with degree 2 (determined by GridSearchCV, ranges 1 to 6) -> linear regression   |1.1049600462451854        |1.105605791763102         |1.1056148708298765        |
-|decision tree regression with max depth 3 (determined by GridSearchCV, ranges 1 to 9)                       |1.099172960269645         |1.0990192992719736        |1.0998107405874051        |
+|decision tree regression with max depth 3 (determined by GridSearchCV, ranges 1 to 9)                       |1.099172960269645         |**1.0990192992719736**    |1.0998107405874051        |
 |k-neighbors regression with number of neighbors 300 (determined by GridSearchCV, ranges 200 to 400, step 5) |1.099172960269645         |1.0990192992719736        |1.0998107405874051        |
 
+As shown by the table above, the decision tree regressor had the lowest max RMSE with the 2nd combination of columns, which transformed all four columns. Thus, our best/final model is the decision tree regressor with max depth 3. 
+
+(explain greater than 5)
 
 # Fairness Analysis
+To test the fairness of our model, we chose to group our data by whether a recipe had low or high calories. This was created with a binarizer with threshold 500 calories to roughly split our data in half.
+
+- $H_0$: Our model is fair. Its precision for low calorie recipes and high calorie recipes are roughly the same. Any differences are due to random chance.
+- $H_1$: Our model is unfair. Its precision for low calorie recipes is lower than the precision for high calorie recipes.
+- test statistic: difference in mean squared error (specifically, high calorie MSE $-$ low calorie MSE)
+- significance level: $\alpha = 0.05$
+- p-value = $0.0$
+
+Since our p-value $\leq \alpha = 0.05$, we reject the null hypothesis, $H_0$, in favor of the alternative hypothesis, $H_1$, so our data suggests that it appears that high calorie recipes have a lower precision than low calorie recipes.
 
