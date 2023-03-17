@@ -7,7 +7,7 @@ This is a project for the Winter 2023 offering of DSC 80 at UC San Diego, creati
 
 Members: Kurumi Kaneko, Candus Shi
 
-# Framing the Problem
+## Framing the Problem
 
 In this project, we try to predict the average rating of a recipe using a regression model.
 The response variable is average rating, and we chose to predict this because as a recipe author, after posting your recipe, you may want to update the recipe to get higher average ratings, such as by changing the number of steps, e.g. grouping steps together, or to re-upload the recipe and keep it relevant. Using our model, a recipe author could predict how their changes to their recipe may affect its average rating.
@@ -18,11 +18,11 @@ To follow best modeling practices, we use k-fold cross validation with 5 folds o
 
 Based on the purpose of our prediction, we assume that your recipe has already been posted. So, at the time of prediction, we would know the nutritional values of a recipe, the number of steps and ingredients in a recipe, and the duration of how long a recipe has been posted on the site.
 
-# Baseline Model
+## Baseline Model
 
 Our baseline model is a linear regression model on polynomially transformed features, namely all the nutritional values, the number of steps and ingredients:
 
-Features:
+#### Features:
 - `calories`: total calories
 - `total fat %` (Percent Daily Value)
 - `sugar %`
@@ -39,11 +39,11 @@ Baseline model's maximum RMSE from ten iterations of 5-fold validation: 2.071715
 
 This means that on average, our model predicts an average rating of 1.25-1.30 star ratings above or below the actual average rating. This is not "great" because the ratings are out of 5 stars, so for example it could wrongly predict a 5-star recipe to be 3.8 stars or 6.2 stars (which is not possible). We address this issue in our final model.
 
-# Final Model
+## Final Model
 
 Our final model is a decision tree regression model with max tree depth 3, but with only certain nutritional values, the number of steps and ingredients and the submitted date.
 
-Features:
+#### Features:
 - `calories`
   - due to imperfect multicollinearity, we removed the other nutritional value columns because typically an increase in any of those nutritional facts (sugar, fat, sodium, carbohydrates, etc.) correlates with an increase in calories; i.e., if a variable is highly correlated with another variable, it can lead to unwanted bias in our model.
 - `n_steps`
@@ -53,7 +53,7 @@ Features:
 - `submitted`: the date the recipe was posted on the site
   - since our prediction is motivated by the idea that how long a recipe has been posted may affect the average rating, we want to include this feature
 
-Feature Engineering:
+#### Feature Engineering:
 - `calories`: standardized scaling
 - `n_steps`: binarized with threshold > 9
 - `n_ingredients`: binned (see graph below)
@@ -63,12 +63,12 @@ Feature Engineering:
 
 Looking at the distribution of number of ingredients, we chose four bins that roughly separate the data into equal area, except for the last bin which groups most of the data in the right tail that is far from the center of the distribution.
 
-Hyperparameter Selection:
+#### Hyperparameter Selection:
 
 One of the main hyperparameters of the decision tree regression model is the max depth, which sets how many levels of the tree the model can have when splitting up the data into its leaf nodes. The regressor model additionally takes the mean of the response variable among each leaf node. 
 We used GridSearchCV to test different max depth values from 1 to 9 and got the best max depth parameter value of 3. 
 
-Models:
+#### Models:
 
 We tested four models and tested three combinations of column transformations:
 1) number of years posted, binned number of ingredients, standardized calories 
@@ -84,9 +84,11 @@ We tested four models and tested three combinations of column transformations:
 
 As shown by the table above, the decision tree regressor had the lowest max RMSE with the 2nd combination of columns, which transformed all four columns. Thus, our best/final model is the decision tree regressor with max depth 3. 
 
-(explain greater than 5)
+#### Additional Observations
+We observed from our baseline model that there were a few predictions for average rating greater than 5 stars, e.g. there were 10 predictions on the training data set greater than 5 stars and 6 predictions on the testing data set greater than 5 stars. However, the highest possible average rating for a recipe from 1 to 5 stars is 5. We theorize that this is due to the fact that our baseline model was a linear regression model, so it's able to predict values that aren't present in the data.
+On the other hand, our final model did not predict any average ratings greater than 5 stars. This is likely due to the fact that we used a decision tree regressor, which uses the average of the response variable at each leaf node (from the fit data) as the prediction value for the average rating of a recipe.
 
-# Fairness Analysis
+## Fairness Analysis
 We conducted a permutation test to assess the fairness of our model, we chose to group our data by whether a recipe had low or high calories. This was created with a binarizer with threshold 500 calories to roughly split our data in half.
 
 - \\(H_0\\): Our model is fair. Its RMSE for low calorie recipes and high calorie recipes are roughly the same. Any differences are due to random chance.
@@ -95,6 +97,8 @@ We conducted a permutation test to assess the fairness of our model, we chose to
 - significance level: \\(\alpha = 0.05\\)
 - p-value = \\(0.0\\)
 
-Since our p-value \\(\leq \alpha = 0.05\\), we reject the null hypothesis, \\(H_0\\), in favor of the alternative hypothesis, $H_1$, so our data suggests that it appears that high calorie recipes have a lower precision than low calorie recipes.
+Since our p-value \\(\leq \alpha = 0.05\\), we reject the null hypothesis, \\(H_0\\), in favor of the alternative hypothesis, \\(H_1\\), so our data suggests that it appears that high calorie recipes have a lower precision than low calorie recipes.
 
 <iframe src='assets/rmseperm.html' width=1000 height=600 frameBorder=0></iframe>
+
+As shown in the graph above, the observed difference in RMSE is to the far right of any possible value from the sampling distribution under the null hypothesis. 
