@@ -45,7 +45,7 @@ Our final model is a decision tree regression model with max tree depth 3, but w
 
 #### Features:
 - `calories`
-  - due to imperfect multicollinearity, we removed the other nutritional value columns because typically an increase in any of those nutritional facts (sugar, fat, sodium, carbohydrates, etc.) correlates with an increase in calories; i.e., if a variable is highly correlated with another variable, it can lead to unwanted bias in our model.
+  - we removed the other nutritional value columns because typically an increase in any of those nutritional facts (sugar, fat, sodium, carbohydrates, etc.) correlates with an increase in calories; i.e., they are redundant features and can be removed to keep our model as simple as possible
 - `n_steps`
   - fewer steps may imply a simpler recipe and so it may be more likely to attract a higher average rating
 - `n_ingredients`
@@ -61,7 +61,7 @@ Our final model is a decision tree regression model with max tree depth 3, but w
 
 <iframe src='assets/ingbin.html' width=1000 height=600 frameBorder=0></iframe>
 
-Looking at the distribution of number of ingredients, we chose four bins that roughly separate the data into equal area, except for the last bin which groups most of the data in the right tail that is far from the center of the distribution.
+Looking at the distribution of number of ingredients, we chose four bins that roughly separate the data into equal area, except for the last bin which groups most of the data in the right tail that is far from the center of the distribution. The numbers in the gold color located in each partition represents the proportion of the recipes in its respective partition.
 
 #### Hyperparameter Selection:
 
